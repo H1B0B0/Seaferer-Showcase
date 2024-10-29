@@ -5,6 +5,7 @@ services:
     ports:
       - "80:80"
       - "443:443"
+      - "8080:8080"
     labels:
       - "traefik.http.services.traefik.loadbalancer.server.port=8080"
     volumes:
@@ -29,14 +30,11 @@ services:
       - "traefik.http.routers.app-tls.tls.domains[0].main=app.traefik.me"
       - "traefik.http.routers.app-tls.tls.domains[0].sans=app-*.traefik.me"
     command: >
-      sh -c "npm cache clean --force &&
-             rm -rf node_modules &&
-             npm install &&
-             npm run dev"
+      sh -c "npm install && npm run dev"
     ports:
-      - 1234:1234
+      - 3000:3000
     volumes:
-      - .:/usr/src/app
+      - ./client:/usr/src/app
     container_name: node-dev-env
 
 volumes:
