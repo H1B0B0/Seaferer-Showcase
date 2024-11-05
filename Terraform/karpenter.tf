@@ -28,11 +28,11 @@ resource "kubectl_manifest" "karpenter_node_class" {
       role: ${module.karpenter.node_iam_role_name}
       subnetSelectorTerms:
         - tags:
-            karpenter.sh/discovery: ${local.env}
+            karpenter.sh/discovery: ${module.eks.cluster_name}
       securityGroupSelectorTerms:
         - tags:
             karpenter.sh/discovery: ${module.eks.cluster_name}
-        - id: ${module.eks.cluster_primary_security_group_id}
+        - id: ${module.eks.cluster_security_group_id}
       tags:
         karpenter.sh/discovery: ${module.eks.cluster_name}
   YAML
@@ -52,27 +52,22 @@ resource "kubectl_manifest" "karpenter_node_pool" {
       template:
         spec:
           nodeClassRef:
-            group: karpenter.k8s.aws
+            apiVersion: karpenter.k8s.aws/v1beta1
             kind: EC2NodeClass
             name: default
+            group: karpenter.k8s.aws
           requirements:
-            - key: "karpenter.k8s.aws/instance-category"
+            - key: "karpenter.sh/capacity-type"
               operator: In
-              values: ["c", "m", "r"]
-            - key: "karpenter.k8s.aws/instance-cpu"
+              values: ["on-demand", "spot"]
+            - key: kubernetes.io/os
               operator: In
-              values: ["4", "8", "16", "32"]
-            - key: "karpenter.k8s.aws/instance-hypervisor"
-              operator: In
-              values: ["nitro"]
-            - key: "karpenter.k8s.aws/instance-generation"
-              operator: Gt
-              values: ["2"]
+              values: ["linux"]
       limits:
         cpu: 1000
       disruption:
         consolidationPolicy: WhenEmpty
-        consolidateAfter: 30s
+        consolidateAfter: 10s  # Reduced from 30s to 10s for faster adaptation
   YAML
 
   depends_on = [

@@ -5,7 +5,7 @@ module "eks" {
   cluster_version = local.cluster_version
 
   cluster_endpoint_private_access = true
-  cluster_endpoint_public_access  = false
+  cluster_endpoint_public_access  = true
   vpc_id                          = module.vpc.vpc_id
   subnet_ids                      = module.vpc.private_subnets
 
@@ -20,12 +20,12 @@ module "eks" {
         computeType = "fargate"
         resources = {
           limits = {
-            cpu    = "0.25"
-            memory = "256M"
+            cpu    = "0.1"
+            memory = "128Mi"
           }
           requests = {
-            cpu    = "0.25"
-            memory = "256M"
+            cpu    = "0.1"
+            memory = "128Mi"
           }
         }
       })
@@ -44,17 +44,7 @@ module "eks" {
           labels    = { "app.kubernetes.io/name" = "karpenter" }
         }
       ]
-    }
-  }
-
-  cluster_security_group_additional_rules = {
-    ingress_self_all = {
-      description = "Allow Atlantis and VPN to reach control plane"
-      protocol    = "tcp"
-      from_port   = 443
-      to_port     = 443
-      type        = "ingress"
-      cidr_blocks = ["0.0.0.0/0"]
+      subnets = module.vpc.private_subnets
     }
   }
 
@@ -62,4 +52,3 @@ module "eks" {
     "karpenter.sh/discovery" = local.cluster_name
   }
 }
-

@@ -5,7 +5,7 @@ resource "helm_release" "karpenter_crd" {
   repository_username = data.aws_ecrpublic_authorization_token.token.user_name
   repository_password = data.aws_ecrpublic_authorization_token.token.password
   chart               = "karpenter-crd"
-  version             = "1.0.1"
+  version             = "1.0.6"
   wait                = false
 
   values = [
@@ -26,7 +26,7 @@ resource "helm_release" "karpenter" {
   repository_username = data.aws_ecrpublic_authorization_token.token.user_name
   repository_password = data.aws_ecrpublic_authorization_token.token.password
   chart               = "karpenter"
-  version             = "1.0.1"
+  version             = "1.0.6"
   wait                = false
 
   values = [
@@ -49,11 +49,11 @@ resource "helm_release" "karpenter" {
     controller:
       resources:
         requests:
-          cpu: 1000m
-          memory: 1024Mi
+          cpu: 0.1
+          memory: 128Mi
         limits:
-          cpu: 1000m
-          memory: 1024Mi
+          cpu: 0.1
+          memory: 128Mi
     EOT
   ]
 

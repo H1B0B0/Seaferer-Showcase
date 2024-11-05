@@ -40,7 +40,7 @@ resource "aws_security_group_rule" "allow_ssh_access" {
   to_port           = 22
   protocol          = "tcp"
   security_group_id = aws_security_group.karpenter_node_sg.id
-  cidr_blocks       = ["0.0.0.0/0"] # Remplacez par votre IP ou plage d'IP pour plus de sécurité
+  cidr_blocks       = ["0.0.0.0/0"]
   description       = "Allow SSH access from anywhere"
 }
 
