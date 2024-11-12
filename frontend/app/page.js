@@ -3,6 +3,7 @@ import { useEffect, useState, useRef } from "react";
 import { Footer, Navbar } from "../components";
 import {
   About,
+  Dashboard,
   Explore,
   Feedback,
   GetStarted,
@@ -243,7 +244,12 @@ const Page = () => {
           <div className="gradient-04 z-0" />
           <WhatsNew />
         </div>
-        <World />
+        <div className="relative py-16">
+          <Dashboard />
+        </div>
+        <div className="relative py-8">
+          <World />
+        </div>
         <div className="relative py-8">
           <Insights />
           <div className="gradient-04 z-0" />
