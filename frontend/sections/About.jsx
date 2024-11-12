@@ -22,15 +22,35 @@ const About = () => (
         variants={fadeIn("up", "tween", 0.2, 1)}
         className="mt-[8px] font-normal sm:text-[32px] text-[20px] text-center text-secondary-white"
       >
-        <span className="font-extrabold"> Seaferer </span> is a new thing in the
-        future, where you can enjoy the virtual world by feeling like it's
-        really real, you can feel what you feel in this metaverse world, because
-        this is really the{" "}
-        <span className="font-extrabold">madness of the metaverse</span> of
-        today, using only <span className="font-extrabold">VR</span> devices you
-        can easily explore the metaverse world you want, turn your dreams into
-        reality. Let's <span className="font-extrabold">explore</span> the
-        madness of the metaverse by scrolling down
+        <p>
+          <span className="font-extrabold">Seaferer</span> offers a
+          groundbreaking approach to infrastructure setup by providing a fully
+          automated, user-friendly interface. This solution revolutionizes the
+          traditionally complex and labor-intensive DevOps tasks by making
+          deployment accessible, intuitive, and efficient.
+        </p>
+
+        <p>
+          Through advanced integration of{" "}
+          <span className="font-semibold">Docker</span> and{" "}
+          <span className="font-semibold">Kubernetes</span>
+          technologies, Seaferer replaces much of the manual DevOps intervention
+          with an intuitive UI that allows for rapid and reliable infrastructure
+          setup. This approach removes the need for deep DevOps knowledge,
+          making it ideal for teams and individuals who want to manage their
+          environments with minimal complexity.
+        </p>
+
+        <p>
+          With Seaferer, users can seamlessly{" "}
+          <span className="font-semibold">deploy, manage, and scale</span>{" "}
+          infrastructure, ensuring high levels of{" "}
+          <span className="font-semibold">consistency, reliability,</span> and{" "}
+          <span className="font-semibold">speed</span>
+          in deployment processes. This solution empowers teams to take control
+          of their environments effortlessly, enhancing operational efficiency
+          and flexibility across all stages of infrastructure management.
+        </p>
       </motion.p>
 
       <motion.img
