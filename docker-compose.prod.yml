@@ -17,9 +17,10 @@ services:
 
   seaferer:
     image: node:20.11.0-alpine
+    restart: unless-stopped
     working_dir: /usr/src/app
     labels:
-      - "traefik.http.routers.seaferer.rule=Host(`saeferer.com`)"
+      - "traefik.http.routers.seaferer.rule=Host(`seaferer.com`)"
       - "traefik.http.routers.seaferer.entrypoints=https"
       - "traefik.http.routers.seaferer.tls.certresolver=letsencrypt"
     command: >
