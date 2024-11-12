@@ -13,6 +13,28 @@ import {
 } from "../sections";
 import Spline from "@splinetool/react-spline";
 
+const useWindowSize = () => {
+  const [windowSize, setWindowSize] = useState({
+    height: typeof window !== "undefined" ? window.innerHeight : 0,
+    width: typeof window !== "undefined" ? window.innerWidth : 0,
+  });
+
+  useEffect(() => {
+    const handleResize = () => {
+      setWindowSize({
+        height: window.innerHeight,
+        width: window.innerWidth,
+      });
+    };
+
+    window.addEventListener("resize", handleResize);
+    handleResize();
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  return windowSize;
+};
+
 const ScrollIndicator = () => (
   <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce z-50">
     <div className="flex flex-col items-center text-white">
@@ -48,51 +70,87 @@ const Loading = () => (
 );
 
 const Page = () => {
+  const { height: windowHeight } = useWindowSize();
   const [scrollPosition, setScrollPosition] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
+  const [splineComplete, setSplineComplete] = useState(false);
+  const splineRef = useRef(null);
   const lastScrollTime = useRef(0);
-  const ticking = useRef(false);
+  const rafId = useRef(null);
 
   useEffect(() => {
     document.documentElement.style.scrollBehavior = "smooth";
 
     const handleScroll = () => {
-      if (!ticking.current) {
-        window.requestAnimationFrame(() => {
+      if (!rafId.current) {
+        rafId.current = requestAnimationFrame(() => {
           const position = window.scrollY;
+          const scrollingUp = position < lastScrollTime.current;
           setScrollPosition(position);
 
-          lastScrollTime.current = position;
-          ticking.current = false;
-        });
+          if (splineRef.current) {
+            splineRef.current.emitEvent("scroll", {
+              deltaY: position - lastScrollTime.current,
+              normalized: (position / windowHeight) * 100,
+            });
 
-        ticking.current = true;
+            if (position / windowHeight > 0.5 && !scrollingUp) {
+              setSplineComplete(true);
+            } else if (position / windowHeight < 0.5 && scrollingUp) {
+              setSplineComplete(false);
+            }
+          }
+
+          lastScrollTime.current = position;
+          rafId.current = null;
+        });
       }
     };
 
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => {
       window.removeEventListener("scroll", handleScroll);
+      if (rafId.current) cancelAnimationFrame(rafId.current);
       document.documentElement.style.scrollBehavior = "auto";
     };
-  }, []);
+  }, [windowHeight]);
 
   const onSplineLoad = (spline) => {
+    splineRef.current = spline;
     setIsLoading(false);
   };
+
+  const splineOpacity = Math.max(0, 1 - scrollPosition / (windowHeight * 3));
+  const splineScale = 1 + (scrollPosition / windowHeight) * 0.15;
+  const splineBlur = Math.min(
+    20,
+    Math.max(0, ((scrollPosition - windowHeight) / windowHeight) * 5)
+  );
+  const contentOpacity = Math.min(
+    1,
+    Math.max(
+      0,
+      ((scrollPosition - windowHeight * 1.2) / windowHeight) * 1.2 // Delayed start (1.2 viewport heights)
+    )
+  );
+  const contentTransform = Math.max(
+    0,
+    -100 + scrollPosition / 4 // Slower upward movement and larger initial offset
+  );
+
   return (
     <div className="bg-primary-black overflow-hidden">
       {isLoading && <Loading />}
       <div
         className="fixed top-0 left-0 w-screen h-screen z-10"
         style={{
-          opacity: Math.max(0, 1 - scrollPosition / (window.innerHeight * 0.4)),
-          transform: `scale(${
-            1 + (scrollPosition / window.innerHeight) * 0.1
-          }) translateZ(0)`,
-          willChange: "transform, opacity",
-          pointerEvents:
-            scrollPosition > window.innerHeight / 2 ? "none" : "auto",
+          opacity: splineOpacity,
+          transform: `scale(${splineScale}) translateZ(0)`,
+          willChange: "transform, opacity, filter",
+          transition: "opacity 0.6s ease-out, filter 0.6s ease-out",
+          pointerEvents: splineComplete ? "none" : "auto",
+          visibility: scrollPosition > windowHeight * 3 ? "hidden" : "visible",
+          filter: `blur(${splineBlur}px)`,
         }}
       >
         <Spline
@@ -107,25 +165,18 @@ const Page = () => {
           }}
           onLoad={onSplineLoad}
         />
-        {!isLoading && scrollPosition < 100 && <ScrollIndicator />}
+        {!isLoading && !splineComplete && <ScrollIndicator />}
       </div>
 
       <div
         style={{
-          transform: `translateY(${Math.max(
-            0,
-            -100 + scrollPosition / 2
-          )}px) translateZ(0)`,
-          opacity: Math.min(
-            1,
-            (scrollPosition - window.innerHeight * 0.3) /
-              (window.innerHeight * 0.2)
-          ),
+          transform: `translateY(${contentTransform}px) translateZ(0)`,
+          opacity: contentOpacity,
           willChange: "transform, opacity",
+          transition: "opacity 0.4s ease-out, transform 0.4s ease-out",
         }}
-        className="relative z-20 mt-[100vh] pb-[100vh]"
+        className="relative z-20 mt-[200vh] pb-[100vh]"
       >
-        <Hero />
         <div className="relative py-8">
           <About />
           <div className="gradient-03 z-0" />
