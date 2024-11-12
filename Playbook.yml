@@ -54,7 +54,7 @@
         name: nodejs
         update_cache: yes
 
-    - name: Install rsync
+    - name: Install rsync on remote
       become: yes
       become_user: root
       yum:
