@@ -2,3 +2,5 @@ Terraform/.terraform
 Terraform/terraform.tfstate
 Terraform/terraform.tfstate.backup
 Terraform/.terraform.lock.hcl
+frontend/node_modules
+frontend/.next
