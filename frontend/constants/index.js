@@ -37,16 +37,16 @@ export const startingFeatures = [
 
 export const newFeatures = [
   {
-    imgUrl: '/vrpano.svg',
-    title: 'A new world',
+    imgUrl: '/devops.jpg',
+    title: 'Replace Your DevOps Team',
     subtitle:
-        'we have the latest update with new world for you to try never mind',
+        'That simplifies cloud management, reducing the need for a dedicated DevOps team. Manage everything with just a few clicks.',
   },
   {
-    imgUrl: '/headset.svg',
-    title: 'More realistic',
+    imgUrl: '/ai.jpg',
+    title: 'AI Assistance',
     subtitle:
-        'In the latest update, your eyes are narrow, making the world more realistic than ever',
+        'You will enjoy a more realistic and immersive experience, with AI assistance that will support and optimize your operations seamlessly.',
   },
 ];
 
