@@ -54,12 +54,6 @@
         name: nodejs
         update_cache: yes
 
-    - name: Install rsync on runner
-      local_action:
-        module: command
-        cmd: sudo apt-get install -y rsync
-      run_once: true
-
     - name: Install rsync on remote
       become: yes
       become_user: root

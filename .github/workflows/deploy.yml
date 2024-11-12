@@ -47,6 +47,10 @@ jobs:
         run: echo -e "[EC2]\n${{ secrets.HOSTS }}" > inventory.ini
       - name: Display Ansible inventory file
         run: cat inventory.ini
+      - name: Install rsync
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y rsync
       - name: Run Ansible Playbook
         run: |
           ansible-playbook Playbook.yml -i inventory.ini --private-key key.pem --ssh-extra-args "-o StrictHostKeyChecking=no"
