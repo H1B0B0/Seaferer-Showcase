@@ -23,6 +23,7 @@ export const exploreWorlds = [
     id: 'world-5',
     imgUrl: '/grafana.png',
     title: 'Monitoring',
+    className:"object-cover w-full h-64 rounded-md"
   },
 ];
 
