@@ -1,0 +1,117 @@
+- hosts: all
+  become: true
+  user: ec2-user
+  tasks:
+    - name: Install Docker
+      become: yes
+      become_user: root
+      yum:
+        name: docker
+        update_cache: yes
+
+    - name: Install pip
+      become: yes
+      become_user: root
+      yum:
+        name: python3,python3-pip
+        update_cache: yes
+
+    - name: Install Docker Compose
+      become: yes
+      become_user: root
+      pip:
+        name: docker-compose
+        extra_args: --ignore-installed requests
+
+    - name: Create Docker CLI plugins directory
+      become: yes
+      become_user: root
+      file:
+        path: /usr/local/lib/docker/cli-plugins
+        state: directory
+        mode: "0755"
+
+    - name: Install Docker Compose plugin
+      become: yes
+      become_user: root
+      get_url:
+        url: https://github.com/docker/compose/releases/download/v2.20.2/docker-compose-linux-x86_64
+        dest: /usr/local/lib/docker/cli-plugins/docker-compose
+        mode: "0755"
+
+    - name: Start Docker
+      become: yes
+      become_user: root
+      service:
+        name: docker
+        state: started
+        enabled: yes
+
+    - name: Install Node.js
+      become: yes
+      become_user: root
+      yum:
+        name: nodejs
+        update_cache: yes
+
+    - name: Install rsync
+      become: yes
+      become_user: root
+      yum:
+        name: rsync
+        state: present
+
+    - name: Ensure /app folder exists
+      become: yes
+      become_user: root
+      file:
+        path: /app
+        state: directory
+        mode: "0755"
+
+    - name: Give permission to user ec2-user to /app folder
+      become: yes
+      become_user: root
+      file:
+        path: /app
+        owner: ec2-user
+        group: ec2-user
+        mode: "0755"
+
+    - name: Synchronize project files to /app folder
+      become: yes
+      become_user: root
+      synchronize:
+        src: ./
+        dest: /app/
+        delete: yes
+        rsync_opts:
+          - "--exclude=.git/"
+          - "--exclude=node_modules/"
+          - "--exclude=.env"
+          - "--exclude=frontend/.env"
+
+    - name: Run npm install in /app/frontend
+      become: yes
+      command: npm install
+      args:
+        chdir: /app/frontend
+
+    - name: Check if Docker Compose stack is running
+      become: yes
+      become_user: root
+      command: docker compose -f /app/docker-compose.prod.yml ps
+      register: docker_compose_status
+      failed_when: docker_compose_status.rc not in [0, 1]
+
+    - name: Restart Docker Compose stack if running
+      become: yes
+      become_user: root
+      command: docker compose -f /app/docker-compose.prod.yml restart
+      when: docker_compose_status.rc == 0
+
+    - name: Deploy Docker Compose stack if not running
+      become: yes
+      become_user: root
+      command: docker compose -f /app/docker-compose.prod.yml up -d
+      when: docker_compose_status.rc != 0

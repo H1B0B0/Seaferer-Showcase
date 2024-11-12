@@ -1,0 +1,55 @@
+name: Elixir CI
+
+on:
+  push:
+    tags:
+      - "*"
+    branches:
+      - "main"
+  pull_request:
+    branches: ["main"]
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    name: Deploy
+    runs-on: self-hosted
+    if: startsWith(github.ref, 'refs/tags/')
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Python
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.11"
+          architecture: "x64"
+      - name: Cache pip
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-ansible
+      - name: Install Ansible
+        run: |
+          python -m pip install --user ansible
+          echo "$HOME/.local/bin" >> $GITHUB_PATH
+      - name: Create SSH key file
+        run: echo "${{ secrets.KEY }}" | tr -d '\r' > key.pem
+      - name: Set permissions for SSH key
+        run: chmod 600 key.pem
+      - name: Create Ansible inventory file
+        run: echo -e "[EC2]\n${{ secrets.HOSTS }}" > inventory.ini
+      - name: Display Ansible inventory file
+        run: cat inventory.ini
+      - name: Wait for SSH to be available
+        run: |
+          for i in {1..30}; do
+            ssh -o StrictHostKeyChecking=no -i key.pem ec2-user@${{ secrets.HOSTS }} 'echo SSH is available' && break
+            echo "Waiting for SSH to be available..."
+            sleep 10
+          done
+      - name: Run Ansible Playbook
+        run: |
+          ansible-playbook Playbook.yml -i inventory.ini --private-key key.pem --ssh-extra-args "-o StrictHostKeyChecking=no"

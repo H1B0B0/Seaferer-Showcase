@@ -10,6 +10,13 @@ entryPoints:
   https:
     address: ":443"
 
+certificatesResolvers:
+  letsencrypt:
+    acme:
+      email: support@seaferer.com
+      storage: /acme/acme.json
+      tlsChallenge: {}
+
 providers:
   file:
     filename: /etc/traefik/tls.yml

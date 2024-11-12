@@ -13,24 +13,17 @@ services:
       - ./tls.yml:/etc/traefik/tls.yml
       - /var/run/docker.sock:/var/run/docker.sock
       - certs:/etc/ssl/traefik
-
-  reverse-proxy-https-helper:
-    image: alpine
-    command: sh -c "cd /etc/ssl/traefik
-      && wget traefik.me/cert.pem -O cert.pem
-      && wget traefik.me/privkey.pem -O privkey.pem"
-    volumes:
-      - certs:/etc/ssl/traefik
+      - certs:/acme
 
   seaferer:
     image: node:20.11.0-alpine
     working_dir: /usr/src/app
     labels:
-      - "traefik.http.routers.seaferer.rule=Host(`seaferer.traefik.me`)"
-      - "traefik.http.routers.seaferer-tls.tls.domains[0].main=seaferer.traefik.me"
-      - "traefik.http.routers.seaferer-tls.tls.domains[0].sans=seaferer-*.traefik.me"
+      - "traefik.http.routers.seaferer.rule=Host(`saeferer.com`)"
+      - "traefik.http.routers.seaferer.entrypoints=https"
+      - "traefik.http.routers.seaferer.tls.certresolver=letsencrypt"
     command: >
-      sh -c "npm install && npm run dev"
+      sh -c "npm install && npm run build && npm run start"
     ports:
       - 3000:3000
     volumes:
