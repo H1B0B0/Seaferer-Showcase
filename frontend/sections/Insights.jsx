@@ -19,7 +19,7 @@ const Insights = () => (
       <TypingText title="| Insight" textStyles="text-center" />
       <TitleText title="Insights about Seaferer" textStyles="text-center" />
 
-      <div className="mt-[50px] flex flex-col gap-[30px] mb-60">
+      <div className="mt-[50px] flex flex-col gap-[30px] mb-64">
         {insights.map((insight, i) => (
           <InsightCard key={`Insight-${i + 1}`} {...insight} index={i + 1} />
         ))}
