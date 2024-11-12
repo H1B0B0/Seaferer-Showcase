@@ -28,23 +28,25 @@ export const exploreWorlds = [
 ];
 
 export const startingFeatures = [
-  "Find a world that suits you and you want to enter",
-  "Enter the world by reading precaution to be safe",
-  "No need to beat around the bush, just stay on the gas and have fun",
+  'Choose your cloud provider seamlessly.',
+  'Build your cloud infrastructure easily.',
+  'Launch tools with one click.',
+  'Monitor your infrastructure in real time.',
+  'Get deployment insights from your repositories.'
 ];
 
 export const newFeatures = [
   {
-    imgUrl: "/vrpano.svg",
-    title: "A new world",
+    imgUrl: '/devops.jpg',
+    title: 'Replace Your DevOps Team',
     subtitle:
-      "we have the latest update with new world for you to try never mind",
+        'That simplifies cloud management, reducing the need for a dedicated DevOps team. Manage everything with just a few clicks.',
   },
   {
-    imgUrl: "/headset.svg",
-    title: "More realistic",
+    imgUrl: '/ai.jpg',
+    title: 'AI Assistance',
     subtitle:
-      "In the latest update, your eyes are narrow, making the world more realistic than ever",
+        'You will enjoy a more realistic and immersive experience, with AI assistance that will support and optimize your operations seamlessly.',
   },
 ];
 
