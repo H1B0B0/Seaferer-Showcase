@@ -27,16 +27,61 @@ const useWindowSize = () => {
       });
     };
 
-    window.addEventListener("resize", handleResize);
+    // Initial size
     handleResize();
+    window.addEventListener("resize", handleResize);
+
     return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (!rafId.current) {
+        rafId.current = requestAnimationFrame(() => {
+          const position = window.scrollY;
+          const scrollingUp = position < lastScrollTime.current;
+          setScrollPosition(position);
+
+          // Désactiver le smooth scroll une fois passé le seuil
+          if (position > windowHeight * 3) {
+            document.documentElement.style.scrollBehavior = "auto";
+          } else {
+            document.documentElement.style.scrollBehavior = "smooth";
+          }
+
+          if (splineRef.current) {
+            splineRef.current.emitEvent("scroll", {
+              deltaY: position - lastScrollTime.current,
+              normalized: (position / windowHeight) * 100,
+            });
+
+            // Ajuster la logique de completion
+            if (position / windowHeight > 2.5 && !scrollingUp) {
+              setSplineComplete(true);
+            } else if (position / windowHeight < 2.5 && scrollingUp) {
+              setSplineComplete(false);
+            }
+          }
+
+          lastScrollTime.current = position;
+          rafId.current = null;
+        });
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+      if (rafId.current) cancelAnimationFrame(rafId.current);
+      document.documentElement.style.scrollBehavior = "auto";
+    };
   }, []);
 
   return windowSize;
 };
 
 const ScrollIndicator = () => (
-  <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce z-50">
+  <div className="absolute bottom-8 left-0 right-0 mx-auto w-fit animate-bounce z-50">
     <div className="flex flex-col items-center text-white">
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -62,9 +107,9 @@ const Loading = () => (
   <div className="fixed inset-0 z-50 flex items-center justify-center bg-primary-black">
     <div className="flex flex-col items-center justify-center">
       <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-white mx-auto"></div>
-      <p className="mt-4 text-white text-2xl text-center">
+      <div className="mt-4 text-white text-2xl text-center">
         Loading Experience...
-      </p>
+      </div>
     </div>
   </div>
 );
@@ -77,6 +122,12 @@ const Page = () => {
   const splineRef = useRef(null);
   const lastScrollTime = useRef(0);
   const rafId = useRef(null);
+
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   useEffect(() => {
     document.documentElement.style.scrollBehavior = "smooth";
@@ -137,6 +188,8 @@ const Page = () => {
     0,
     -100 + scrollPosition / 4 // Slower upward movement and larger initial offset
   );
+
+  if (!isMounted) return null; // Prevent hydration mismatch
 
   return (
     <div className="bg-primary-black overflow-hidden">
