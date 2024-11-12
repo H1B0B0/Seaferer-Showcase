@@ -33,7 +33,7 @@ const About = () => (
         <p>
           Through advanced integration of{" "}
           <span className="font-semibold">Docker</span> and{" "}
-          <span className="font-semibold">Kubernetes</span>
+          <span className="font-semibold">Kubernetes </span>
           technologies, Seaferer replaces much of the manual DevOps intervention
           with an intuitive UI that allows for rapid and reliable infrastructure
           setup. This approach removes the need for deep DevOps knowledge,
@@ -46,7 +46,7 @@ const About = () => (
           <span className="font-semibold">deploy, manage, and scale</span>{" "}
           infrastructure, ensuring high levels of{" "}
           <span className="font-semibold">consistency, reliability,</span> and{" "}
-          <span className="font-semibold">speed</span>
+          <span className="font-semibold">speed </span>
           in deployment processes. This solution empowers teams to take control
           of their environments effortlessly, enhancing operational efficiency
           and flexibility across all stages of infrastructure management.
