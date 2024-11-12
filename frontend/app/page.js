@@ -36,44 +36,46 @@ const useWindowSize = () => {
 
   useEffect(() => {
     const handleScroll = () => {
-      if (!rafId.current) {
-        rafId.current = requestAnimationFrame(() => {
-          const position = window.scrollY;
-          const scrollingUp = position < lastScrollTime.current;
-          setScrollPosition(position);
+      if (rafId) {
+        if (!rafId.current) {
+          rafId.current = requestAnimationFrame(() => {
+            const position = window.scrollY;
+            const scrollingUp = position < lastScrollTime.current;
+            setScrollPosition(position);
 
-          // Désactiver le smooth scroll une fois passé le seuil
-          if (position > windowHeight * 3) {
-            document.documentElement.style.scrollBehavior = "auto";
-          } else {
-            document.documentElement.style.scrollBehavior = "smooth";
-          }
-
-          if (splineRef.current) {
-            splineRef.current.emitEvent("scroll", {
-              deltaY: position - lastScrollTime.current,
-              normalized: (position / windowHeight) * 100,
-            });
-
-            // Ajuster la logique de completion
-            if (position / windowHeight > 2.5 && !scrollingUp) {
-              setSplineComplete(true);
-            } else if (position / windowHeight < 2.5 && scrollingUp) {
-              setSplineComplete(false);
+            // Désactiver le smooth scroll une fois passé le seuil
+            if (position > windowHeight * 3) {
+              document.documentElement.style.scrollBehavior = "auto";
+            } else {
+              document.documentElement.style.scrollBehavior = "smooth";
             }
-          }
 
-          lastScrollTime.current = position;
-          rafId.current = null;
-        });
+            if (splineRef.current) {
+              splineRef.current.emitEvent("scroll", {
+                deltaY: position - lastScrollTime.current,
+                normalized: (position / windowHeight) * 100,
+              });
+
+              // Ajuster la logique de completion
+              if (position / windowHeight > 2.5 && !scrollingUp) {
+                setSplineComplete(true);
+              } else if (position / windowHeight < 2.5 && scrollingUp) {
+                setSplineComplete(false);
+              }
+            }
+
+            lastScrollTime.current = position;
+            rafId.current = null;
+          });
+        }
       }
-    };
 
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-      if (rafId.current) cancelAnimationFrame(rafId.current);
-      document.documentElement.style.scrollBehavior = "auto";
+      window.addEventListener("scroll", handleScroll, { passive: true });
+      return () => {
+        window.removeEventListener("scroll", handleScroll);
+        if (rafId.current) cancelAnimationFrame(rafId.current);
+        document.documentElement.style.scrollBehavior = "auto";
+      };
     };
   }, []);
 
