@@ -28,56 +28,10 @@ const useWindowSize = () => {
       });
     };
 
-    // Initial size
     handleResize();
     window.addEventListener("resize", handleResize);
 
     return () => window.removeEventListener("resize", handleResize);
-  }, []);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      if (rafId) {
-        if (!rafId.current) {
-          rafId.current = requestAnimationFrame(() => {
-            const position = window.scrollY;
-            const scrollingUp = position < lastScrollTime.current;
-            setScrollPosition(position);
-
-            // Désactiver le smooth scroll une fois passé le seuil
-            if (position > windowHeight * 3) {
-              document.documentElement.style.scrollBehavior = "auto";
-            } else {
-              document.documentElement.style.scrollBehavior = "smooth";
-            }
-
-            if (splineRef.current) {
-              splineRef.current.emitEvent("scroll", {
-                deltaY: position - lastScrollTime.current,
-                normalized: (position / windowHeight) * 100,
-              });
-
-              // Ajuster la logique de completion
-              if (position / windowHeight > 2.5 && !scrollingUp) {
-                setSplineComplete(true);
-              } else if (position / windowHeight < 2.5 && scrollingUp) {
-                setSplineComplete(false);
-              }
-            }
-
-            lastScrollTime.current = position;
-            rafId.current = null;
-          });
-        }
-      }
-
-      window.addEventListener("scroll", handleScroll, { passive: true });
-      return () => {
-        window.removeEventListener("scroll", handleScroll);
-        if (rafId.current) cancelAnimationFrame(rafId.current);
-        document.documentElement.style.scrollBehavior = "auto";
-      };
-    };
   }, []);
 
   return windowSize;
@@ -129,12 +83,20 @@ const Page = () => {
   const [isMounted, setIsMounted] = useState(false);
 
   const throttle = (func, limit) => {
-    let inThrottle;
+    let lastFunc;
+    let lastRan;
     return function (...args) {
-      if (!inThrottle) {
+      if (!lastRan) {
         func.apply(this, args);
-        inThrottle = true;
-        setTimeout(() => (inThrottle = false), limit);
+        lastRan = Date.now();
+      } else {
+        clearTimeout(lastFunc);
+        lastFunc = setTimeout(() => {
+          if (Date.now() - lastRan >= limit) {
+            func.apply(this, args);
+            lastRan = Date.now();
+          }
+        }, limit - (Date.now() - lastRan));
       }
     };
   };
@@ -152,59 +114,63 @@ const Page = () => {
           const position = window.scrollY;
           const scrollingUp = position < lastScrollTime.current;
 
-          // Batch state updates
-          requestAnimationFrame(() => {
-            setScrollPosition(position);
-            if (splineRef.current) {
-              splineRef.current.emitEvent("scroll", {
-                deltaY: position - lastScrollTime.current,
-                normalized: (position / windowHeight) * 100,
-              });
-            }
+          setScrollPosition(position);
 
-            if (position / windowHeight > 0.5 !== splineComplete) {
-              setSplineComplete(!splineComplete);
-            }
-          });
+          if (splineRef.current) {
+            splineRef.current.emitEvent("scroll", {
+              deltaY: position - lastScrollTime.current,
+              normalized: (position / windowHeight) * 100,
+            });
+          }
+
+          if (position / windowHeight > 0.5 !== splineComplete) {
+            setSplineComplete(!splineComplete);
+          }
 
           lastScrollTime.current = position;
           rafId.current = null;
         });
       }
-    }, 32); // ~ 60fps
+    }, 16);
 
-    window.addEventListener("scroll", handleScroll, { passive: true });
+    window.addEventListener("scroll", handleScroll, {
+      passive: true,
+    });
     return () => {
       window.removeEventListener("scroll", handleScroll);
       if (rafId.current) cancelAnimationFrame(rafId.current);
     };
-  }, [windowHeight]);
+  }, [windowHeight, splineComplete]);
 
   const onSplineLoad = (spline) => {
     splineRef.current = spline;
     setIsLoading(false);
+
+    if (windowWidth < 768) {
+      spline.setZoom(0.8);
+    }
   };
 
   const splineOpacity = Math.max(0, 1 - scrollPosition / (windowHeight * 3));
-  const splineScale = 1 + (scrollPosition / windowHeight) * 0.15;
+  const splineScale =
+    windowWidth < 768
+      ? 1 + (scrollPosition / windowHeight) * 0.05
+      : 1 + (scrollPosition / windowHeight) * 0.15;
   const splineBlur = Math.min(
     20,
     Math.max(0, ((scrollPosition - windowHeight) / windowHeight) * 5)
   );
   const contentOpacity = Math.min(
     1,
-    Math.max(
-      0,
-      ((scrollPosition - windowHeight * 1.2) / windowHeight) * 1.2 // Delayed start (1.2 viewport heights)
-    )
+    Math.max(0, ((scrollPosition - windowHeight * 1.2) / windowHeight) * 1.2)
   );
 
   const contentTransform = Math.max(
     0,
-    -50 + (scrollPosition / windowHeight) * 50 // More gradual movement
+    -50 + (scrollPosition / windowHeight) * 50
   );
 
-  if (!isMounted) return null; // Prevent hydration mismatch
+  if (!isMounted) return null;
 
   return (
     <div className="bg-primary-black overflow-hidden">
@@ -234,6 +200,8 @@ const Page = () => {
             transform: "translate3d(0,0,0)",
           }}
           onLoad={onSplineLoad}
+          width={windowWidth}
+          height={windowHeight}
         />
         {!isLoading && !splineComplete && <ScrollIndicator />}
       </div>
@@ -243,9 +211,9 @@ const Page = () => {
           transform: `translateY(${contentTransform}px) translateZ(0)`,
           opacity: contentOpacity,
           willChange: "transform, opacity",
-          transition: "transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)", // Smoother easing
+          transition: "transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
         }}
-        className="relative z-20 mt-[150vh] mb-[50vh]" // Adjusted initial offset
+        className="relative z-20 mt-[150vh] mb-[50vh]"
       >
         <div className="relative py-8">
           <About />
