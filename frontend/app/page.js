@@ -57,23 +57,42 @@ const ScrollIndicator = () => (
   </div>
 );
 
-const Loading = () => (
-  <div className="fixed inset-0 z-50 flex items-center justify-center bg-primary-black">
-    <div className="flex flex-col items-center justify-center">
-      <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-white mx-auto"></div>
-      <div className="mt-4 text-white text-2xl text-center">
-        Loading Experience...
-      </div>
-    </div>
-  </div>
-);
-
 const Page = () => {
   const { height: windowHeight, width: windowWidth } = useWindowSize();
   const [scrollPosition, setScrollPosition] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const splineRef = useRef(null);
   const lastScrollY = useRef(0);
+
+  const Loading = () => (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-primary-black">
+      <div className="flex flex-col items-center justify-center">
+        <svg
+          className="animate-spin h-24 w-24 text-white"
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+        >
+          <circle
+            className="opacity-25"
+            cx="12"
+            cy="12"
+            r="10"
+            stroke="currentColor"
+            strokeWidth="4"
+          ></circle>
+          <path
+            className="opacity-75"
+            fill="currentColor"
+            d="M12 2a10 10 0 00-1 19.95V22a1 1 0 001-1v-1.05A10 10 0 0012 2z"
+          ></path>
+        </svg>
+        <div className="mt-4 text-white text-2xl text-center">
+          Loading Experience...
+        </div>
+      </div>
+    </div>
+  );
 
   useEffect(() => {
     const handleScroll = () => {
