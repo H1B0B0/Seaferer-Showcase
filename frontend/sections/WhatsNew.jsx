@@ -31,12 +31,12 @@ const WhatsNew = () => (
 
       <motion.div
         variants={planetVariants("right")}
-        className={`flex-1 ${styles.flexCenter}`}
+        className={`flex-1 ${styles.flexCenter} rounded-3xl overflow-hidden`}
       >
         <img
           src="/deploiement.jpg"
           alt="get-started"
-          className="w-[90%] h-[100%] object-contain"
+          className="w-[90%] h-[100%] object-cover rounded-3xl"
         />
       </motion.div>
     </motion.div>

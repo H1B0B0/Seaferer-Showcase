@@ -20,16 +20,17 @@ const Feedback = () => (
         <div className="feedback-gradient" />
         <div>
           <h4 className="font-bold sm:text-[32px] text-[26px] sm:leading-[40px] leading-[36px] text-white">
-            Vignesh
+            STG_16
           </h4>
           <p className="mt-[8px] font-normal sm:text-[18px] text-[12px] sm:leading-[22px] leading-[16px] text-white">
             Founder of Seaferer
           </p>
         </div>
         <p className="mt-[24px] font-normal sm:text-[24px] text-[18px] sm:leading-[45px] leading-[39px] text-white">
-          “With the development of today's technology, metaverse is very useful
-          for today's work, or can be called web 3.0. by using metaverse you can
-          use it as anything”
+          “I have been using the app for a few months now and I am very
+          impressed with the results. The app is very easy to use and the
+          customer service is excellent. I would highly recommend this app to
+          manage your infrastructure.”
         </p>
       </motion.div>
 
@@ -45,13 +46,7 @@ const Feedback = () => (
         <motion.div
           variants={zoomIn(0.4, 1)}
           className="lg:block hidden absolute -left-[10%] top-[3%]"
-        >
-          <img
-            src="/stamp.png"
-            alt="stamp"
-            className="md:w-[170px] w-[115px]  md:h-[170px] h-[115px] object-contain"
-          />
-        </motion.div>
+        ></motion.div>
       </motion.div>
     </motion.div>
   </section>

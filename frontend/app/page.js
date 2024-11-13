@@ -118,7 +118,7 @@ const Loading = () => (
 );
 
 const Page = () => {
-  const { height: windowHeight } = useWindowSize();
+  const { height: windowHeight, width: windowWidth } = useWindowSize();
   const [scrollPosition, setScrollPosition] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [splineComplete, setSplineComplete] = useState(false);
@@ -128,6 +128,17 @@ const Page = () => {
 
   const [isMounted, setIsMounted] = useState(false);
 
+  const throttle = (func, limit) => {
+    let inThrottle;
+    return function (...args) {
+      if (!inThrottle) {
+        func.apply(this, args);
+        inThrottle = true;
+        setTimeout(() => (inThrottle = false), limit);
+      }
+    };
+  };
+
   useEffect(() => {
     setIsMounted(true);
   }, []);
@@ -135,37 +146,37 @@ const Page = () => {
   useEffect(() => {
     document.documentElement.style.scrollBehavior = "smooth";
 
-    const handleScroll = () => {
+    const handleScroll = throttle(() => {
       if (!rafId.current) {
         rafId.current = requestAnimationFrame(() => {
           const position = window.scrollY;
           const scrollingUp = position < lastScrollTime.current;
-          setScrollPosition(position);
 
-          if (splineRef.current) {
-            splineRef.current.emitEvent("scroll", {
-              deltaY: position - lastScrollTime.current,
-              normalized: (position / windowHeight) * 100,
-            });
-
-            if (position / windowHeight > 0.5 && !scrollingUp) {
-              setSplineComplete(true);
-            } else if (position / windowHeight < 0.5 && scrollingUp) {
-              setSplineComplete(false);
+          // Batch state updates
+          requestAnimationFrame(() => {
+            setScrollPosition(position);
+            if (splineRef.current) {
+              splineRef.current.emitEvent("scroll", {
+                deltaY: position - lastScrollTime.current,
+                normalized: (position / windowHeight) * 100,
+              });
             }
-          }
+
+            if (position / windowHeight > 0.5 !== splineComplete) {
+              setSplineComplete(!splineComplete);
+            }
+          });
 
           lastScrollTime.current = position;
           rafId.current = null;
         });
       }
-    };
+    }, 32); // ~ 60fps
 
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => {
       window.removeEventListener("scroll", handleScroll);
       if (rafId.current) cancelAnimationFrame(rafId.current);
-      document.documentElement.style.scrollBehavior = "auto";
     };
   }, [windowHeight]);
 
@@ -187,9 +198,10 @@ const Page = () => {
       ((scrollPosition - windowHeight * 1.2) / windowHeight) * 1.2 // Delayed start (1.2 viewport heights)
     )
   );
+
   const contentTransform = Math.max(
     0,
-    -100 + scrollPosition / 4 // Slower upward movement and larger initial offset
+    -50 + (scrollPosition / windowHeight) * 50 // More gradual movement
   );
 
   if (!isMounted) return null; // Prevent hydration mismatch
@@ -200,11 +212,12 @@ const Page = () => {
       <div
         className="fixed top-0 left-0 w-screen h-screen z-10"
         style={{
+          transform: `scale(${splineScale}) translate3d(0,0,0)`,
           opacity: splineOpacity,
-          transform: `scale(${splineScale}) translateZ(0)`,
-          willChange: "transform, opacity, filter",
-          transition: "opacity 0.6s ease-out, filter 0.6s ease-out",
-          pointerEvents: splineComplete ? "none" : "auto",
+          willChange: "transform, opacity",
+          backfaceVisibility: "hidden",
+          perspective: 1000,
+          transition: "transform 0.2s ease-out",
           visibility: scrollPosition > windowHeight * 3 ? "hidden" : "visible",
           filter: `blur(${splineBlur}px)`,
         }}
@@ -212,12 +225,13 @@ const Page = () => {
         <Spline
           scene="https://prod.spline.design/A6geAl3g2ozafJjK/scene.splinecode"
           style={{
-            width: "100%",
-            height: "100%",
             position: "absolute",
             top: 0,
             left: 0,
+            width: "100%",
+            height: "100%",
             willChange: "transform",
+            transform: "translate3d(0,0,0)",
           }}
           onLoad={onSplineLoad}
         />
@@ -229,9 +243,9 @@ const Page = () => {
           transform: `translateY(${contentTransform}px) translateZ(0)`,
           opacity: contentOpacity,
           willChange: "transform, opacity",
-          transition: "opacity 0.4s ease-out, transform 0.4s ease-out",
+          transition: "transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)", // Smoother easing
         }}
-        className="relative z-20 mt-[200vh] pb-[100vh]"
+        className="relative z-20 mt-[150vh] mb-[50vh]" // Adjusted initial offset
       >
         <div className="relative py-8">
           <About />

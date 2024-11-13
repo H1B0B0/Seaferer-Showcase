@@ -23,7 +23,7 @@ const GetStarted = () => (
         <img
           src="/cloud.jpg"
           alt="Get-Started"
-          className="w-[80%] h-[80%] object-content"
+          className="w-[80%] h-[80%] object-content rounded-3xl"
         />
       </motion.div>
       <motion.div
