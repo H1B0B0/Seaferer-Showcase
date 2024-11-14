@@ -7,17 +7,17 @@ export const exploreWorlds = [
   {
     id: "world-2",
     imgUrl: "/azure.png",
-    title: "AZURE",
+    title: "Azure",
   },
   {
     id: "world-3",
     imgUrl: "/google.png",
-    title: "GOOGLE CLOUD",
+    title: "Google Cloud",
   },
   {
     id: "world-4",
     imgUrl: "/kubernetes.png",
-    title: "Deploiement",
+    title: "Deployment",
   },
   {
     id: "world-5",
@@ -28,25 +28,25 @@ export const exploreWorlds = [
 ];
 
 export const startingFeatures = [
-  'Choose your cloud provider seamlessly.',
-  'Build your cloud infrastructure easily.',
-  'Launch tools with one click.',
-  'Monitor your infrastructure in real time.',
-  'Get deployment insights from your repositories.'
+  "Choose your cloud provider seamlessly.",
+  "Build your cloud infrastructure easily.",
+  "Launch tools with one click.",
+  "Monitor your infrastructure in real time.",
+  "Get deployment insights from your repositories.",
 ];
 
 export const newFeatures = [
   {
-    imgUrl: '/devops.jpg',
-    title: 'Replace Your DevOps Team',
+    imgUrl: "/devops.jpg",
+    title: "Replace Your DevOps Team",
     subtitle:
-        'That simplifies cloud management, reducing the need for a dedicated DevOps team. Manage everything with just a few clicks.',
+      "Simplify cloud management, reducing the need for a dedicated DevOps team. Manage everything with just a few clicks.",
   },
   {
-    imgUrl: '/ai.jpg',
-    title: 'AI Assistance',
+    imgUrl: "/ai.jpg",
+    title: "AI Assistance",
     subtitle:
-        'You will enjoy a more realistic and immersive experience, with AI assistance that will support and optimize your operations seamlessly.',
+      "Enjoy a more realistic and immersive experience, with AI assistance that will support and optimize your operations seamlessly.",
   },
 ];
 

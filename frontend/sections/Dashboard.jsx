@@ -19,7 +19,11 @@ const Dashboard = () => (
         variants={fadeIn("left", "tween", 0.2, 1)}
         className={`flex-1 ${styles.flexCenter}`}
       >
-                <iframe src="https://lottie.host/embed/c6317966-19b6-48df-9723-6520b68e3ace/d8z7DNfoyT.json" width="100%" height="100%"></iframe>
+        <iframe
+          src="https://lottie.host/embed/c6317966-19b6-48df-9723-6520b68e3ace/d8z7DNfoyT.json"
+          width="100%"
+          height="100%"
+        ></iframe>
       </motion.div>
 
       <motion.div
@@ -29,10 +33,15 @@ const Dashboard = () => (
         <TypingText title="| Dashboard" />
         <TitleText title={<>Manage your metrics in a glance</>} />
         <p className="mt-[48px] text-lg leading-relaxed">
-          Manage your data easily with your personalized dashboard. Stay on top of your metrics with real-time updates and intuitive visualizations.
+          Manage your data easily with your personalized dashboard. Stay on top
+          of your metrics with real-time updates and intuitive visualizations.
         </p>
         <br />
-        <p> We use Grafana to provide you with the best experience in monitoring your data.</p>
+        <p>
+          {" "}
+          We use Prometheus to provide you with the best experience in
+          monitoring your data.
+        </p>
       </motion.div>
     </motion.div>
   </section>

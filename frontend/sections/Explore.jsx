@@ -1,12 +1,10 @@
 "use client";
 
 import { useState } from "react";
-
 import { motion } from "framer-motion";
 import styles from "../styles";
 import { TypingText, ExploreCard, TitleText } from "../components";
 import { staggerContainer } from "../utils/motion";
-
 import { exploreWorlds } from "../constants";
 
 const Explore = () => {
@@ -21,13 +19,12 @@ const Explore = () => {
         viewport={{ once: false, amount: 0.25 }}
         className={`${styles.innerWidth} mx-auto flex flex-col`}
       >
-        <TypingText title="| The World" textStyles="text-center" />
+        <TypingText title="| The Stack" textStyles="text-center" />
         <TitleText
           title={
             <>
-              Choose your
-              <br className="md:block hidden " />
-              Infrastructure
+              Choose your <br className="md:block hidden " />
+              Stack
             </>
           }
           textStyles="text-center"
