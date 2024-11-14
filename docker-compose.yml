@@ -29,10 +29,9 @@ services:
       - "traefik.http.routers.seaferer.rule=Host(`seaferer.traefik.me`)"
       - "traefik.http.routers.seaferer-tls.tls.domains[0].main=seaferer.traefik.me"
       - "traefik.http.routers.seaferer-tls.tls.domains[0].sans=seaferer-*.traefik.me"
+      - "traefik.http.services.seaferer.loadbalancer.server.port=3000"
     command: >
       sh -c "npm install && npm run dev"
-    ports:
-      - 3000:3000
     volumes:
       - ./frontend:/usr/src/app
     container_name: node-dev-env
