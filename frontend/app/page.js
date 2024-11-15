@@ -69,7 +69,7 @@ const Page = () => {
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#181F54]">
       <div className="flex flex-col items-center justify-center">
         <div className="relative w-32 h-32">
-          {[...Array(5)].map((_, i) => (
+          {[...Array(10)].map((_, i) => (
             <div
               key={i}
               className="absolute bottom-0 left-1/2 bg-white rounded-full"

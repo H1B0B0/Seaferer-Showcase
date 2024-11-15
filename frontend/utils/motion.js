@@ -83,24 +83,15 @@ export const slideIn = (direction, type, delay, duration) => {
   return getMobileVariants(variants);
 };
 
-export const staggerContainer = (staggerChildren, delayChildren) => {
-  const variants = {
-    hidden: {
-      opacity: 0,
-      transition: defaultTransition,
-    },
-    show: {
-      opacity: 1,
-      transition: {
-        ...defaultTransition,
-        staggerChildren,
-        delayChildren,
-      },
-    },
-  };
-
-  return getMobileVariants(variants);
-};
+export const staggerContainer = () => ({
+  hidden: {
+    opacity: 0,
+  },
+  show: {
+    opacity: 1,
+    transition: defaultTransition,
+  },
+});
 
 export const textVariant = (delay) => {
   const variants = {
