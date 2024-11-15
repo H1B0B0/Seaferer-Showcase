@@ -24,7 +24,24 @@ const getOptimizedTransition = (transition) => {
     : transition;
 };
 
-export const navVariants = {
+const getMobileVariants = (desktopVariants) => {
+  if (isMobile()) {
+    return {
+      hidden: { opacity: 0 },
+      show: {
+        opacity: 1,
+        transition: getOptimizedTransition({
+          type: "tween",
+          duration: 0.6,
+          ease: "easeOut",
+        }),
+      },
+    };
+  }
+  return desktopVariants;
+};
+
+export const navVariants = getMobileVariants({
   hidden: {
     opacity: 0,
     y: -50,
@@ -43,62 +60,78 @@ export const navVariants = {
       delay: 0.2,
     }),
   },
+});
+
+export const slideIn = (direction, type, delay, duration) => {
+  const desktopVariants = {
+    hidden: {
+      x: direction === "left" ? "-100%" : direction === "right" ? "100%" : 0,
+      y: direction === "up" ? "100%" : direction === "down" ? "100%" : 0,
+    },
+    show: {
+      x: 0,
+      y: 0,
+      transition: getOptimizedTransition({
+        type,
+        delay,
+        duration,
+        ease: "easeOut",
+      }),
+    },
+  };
+
+  return getMobileVariants(desktopVariants);
 };
 
-export const slideIn = (direction, type, delay, duration) => ({
-  hidden: {
-    x: direction === "left" ? "-100%" : direction === "right" ? "100%" : 0,
-    y: direction === "up" ? "100%" : direction === "down" ? "100%" : 0,
-  },
-  show: {
-    x: 0,
-    y: 0,
-    transition: getOptimizedTransition({
-      type,
-      delay,
-      duration,
-      ease: "easeOut",
-    }),
-  },
-});
+export const staggerContainer = (staggerChildren, delayChildren) => {
+  const desktopVariants = {
+    hidden: {},
+    show: {
+      transition: getOptimizedTransition({
+        staggerChildren,
+        delayChildren,
+      }),
+    },
+  };
 
-export const staggerContainer = (staggerChildren, delayChildren) => ({
-  hidden: {},
-  show: {
-    transition: getOptimizedTransition({
-      staggerChildren,
-      delayChildren,
-    }),
-  },
-});
+  return getMobileVariants(desktopVariants);
+};
 
-export const textVariant = (delay) => ({
-  hidden: {
-    y: 50,
-    opacity: 0,
-  },
-  show: {
-    y: 0,
-    opacity: 1,
-    transition: getOptimizedTransition({
-      type: "spring",
-      duration: 1.25,
-      delay,
-    }),
-  },
-});
+export const textVariant = (delay) => {
+  const desktopVariants = {
+    hidden: {
+      y: 50,
+      opacity: 0,
+    },
+    show: {
+      y: 0,
+      opacity: 1,
+      transition: getOptimizedTransition({
+        type: "spring",
+        duration: 1.25,
+        delay,
+      }),
+    },
+  };
+
+  return getMobileVariants(desktopVariants);
+};
 
 export const textContainer = {
   hidden: {
     opacity: 0,
   },
-  show: (i = 1) => ({
-    opacity: 1,
-    transition: getOptimizedTransition({
-      staggerChildren: 0.1,
-      delayChildren: i * 0.1,
-    }),
-  }),
+  show: (i = 1) => {
+    const desktopVariants = {
+      opacity: 1,
+      transition: getOptimizedTransition({
+        staggerChildren: 0.1,
+        delayChildren: i * 0.1,
+      }),
+    };
+
+    return getMobileVariants(desktopVariants);
+  },
 };
 
 export const textVariant2 = {
@@ -116,59 +149,71 @@ export const textVariant2 = {
   },
 };
 
-export const fadeIn = (direction, type, delay, duration) => ({
-  hidden: {
-    x: direction === "left" ? 100 : direction === "right" ? -100 : 0,
-    y: direction === "up" ? 100 : direction === "down" ? -100 : 0,
-    opacity: 0,
-  },
-  show: {
-    x: 0,
-    y: 0,
-    opacity: 1,
-    transition: getOptimizedTransition({
-      type,
-      delay,
-      duration,
-      ease: "easeOut",
-    }),
-  },
-});
+export const fadeIn = (direction, type, delay, duration) => {
+  const desktopVariants = {
+    hidden: {
+      x: direction === "left" ? 100 : direction === "right" ? -100 : 0,
+      y: direction === "up" ? 100 : direction === "down" ? -100 : 0,
+      opacity: 0,
+    },
+    show: {
+      x: 0,
+      y: 0,
+      opacity: 1,
+      transition: getOptimizedTransition({
+        type,
+        delay,
+        duration,
+        ease: "easeOut",
+      }),
+    },
+  };
 
-export const planetVariants = (direction) => ({
-  hidden: {
-    x: direction === "left" ? "-300%" : "300%",
-    rotate: isMobile() ? 60 : 120,
-  },
-  show: {
-    x: 0,
-    rotate: 0,
-    transition: getOptimizedTransition({
-      type: "spring",
-      duration: 1.8,
-      delay: 0.5,
-    }),
-  },
-});
+  return getMobileVariants(desktopVariants);
+};
 
-export const zoomIn = (delay, duration) => ({
-  hidden: {
-    scale: 0,
-    opacity: 0,
-  },
-  show: {
-    scale: 1,
-    opacity: 1,
-    transition: getOptimizedTransition({
-      type: "tween",
-      delay,
-      duration,
-      ease: "easeOut",
-    }),
-  },
-});
+export const planetVariants = (direction) => {
+  const desktopVariants = {
+    hidden: {
+      x: direction === "left" ? "-300%" : "300%",
+      rotate: 120,
+    },
+    show: {
+      x: 0,
+      rotate: 0,
+      transition: getOptimizedTransition({
+        type: "spring",
+        duration: 1.8,
+        delay: 0.5,
+      }),
+    },
+  };
 
-export const footerVariants = {
+  return getMobileVariants(desktopVariants);
+};
+
+export const zoomIn = (delay, duration) => {
+  const desktopVariants = {
+    hidden: {
+      scale: 0,
+      opacity: 0,
+    },
+    show: {
+      scale: 1,
+      opacity: 1,
+      transition: getOptimizedTransition({
+        type: "tween",
+        delay,
+        duration,
+        ease: "easeOut",
+      }),
+    },
+  };
+
+  return getMobileVariants(desktopVariants);
+};
+
+export const footerVariants = getMobileVariants({
   hidden: {
     opacity: 0,
     y: 50,
@@ -187,4 +232,4 @@ export const footerVariants = {
       delay: 0.5,
     }),
   },
-};
+});
