@@ -18,7 +18,7 @@ const GetStarted = () => (
     >
       <motion.div
         variants={planetVariants("left")}
-        className={`${styles.flexCenter} flex-1`}
+        className={`${styles.flexCenter} flex-1 overflow-hidden`}
       >
         <img
           src="/cloud.jpg"

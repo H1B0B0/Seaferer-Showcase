@@ -105,3 +105,30 @@
   background: #65c4fa;
   filter: blur(150px);
 }
+
+@keyframes loadingBubble {
+  0% {
+    transform: translateY(0) scale(0.3);
+    opacity: 0;
+  }
+  20% {
+    transform: translateY(-10px) translateX(-5px) scale(0.9);
+    opacity: 0.6;
+  }
+  40% {
+    transform: translateY(-20px) translateX(5px) scale(0.8);
+    opacity: 0.8;
+  }
+  60% {
+    transform: translateY(-30px) translateX(-5px) scale(1);
+    opacity: 0.9;
+  }
+  80% {
+    transform: translateY(-40px) translateX(5px) scale(0.8);
+    opacity: 0.6;
+  }
+  100% {
+    transform: translateY(-50px) translateX(0) scale(0.3);
+    opacity: 0;
+  }
+}
